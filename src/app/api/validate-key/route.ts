@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+function dbClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,6 +17,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ valid: false, error: 'Key required' }, { status: 400 })
     }
     const normalized = key.trim().toUpperCase()
+    const supabase = dbClient()
     const { data, error } = await supabase
       .from('license_keys')
       .select('*')

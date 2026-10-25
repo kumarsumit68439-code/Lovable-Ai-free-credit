@@ -4,10 +4,14 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { generateLicenseKey, ADMIN_EMAIL } from '@/lib/utils'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+function adminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,26 +32,32 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
     if (!user || user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized — admin only' }, { status: 401 })
     }
 
-    const body = await req.json()
-    const plan = body.plan || '30days'
-    const days = plan === '7days' ? 7 : plan === '15days' ? 15 : plan === 'trial' ? 0 : 30
-    const key = generateLicenseKey()
-    const expires_at =
-      days === 0
-        ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        : new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+    const body = await req.json().catch(() => ({}))
+    const plan = (body.plan as string) || '1hour'
+    const label = (body.label as string) || null
 
-    const { data, error } = await supabaseAdmin
+    let ms = 60 * 60 * 1000
+    if (plan === '2hours') ms = 2 * 60 * 60 * 1000
+    else if (plan === '1hour' || plan === 'trial') ms = 60 * 60 * 1000
+    else if (plan === '7days') ms = 7 * 24 * 60 * 60 * 1000
+    else if (plan === '15days') ms = 15 * 24 * 60 * 60 * 1000
+    else if (plan === '30days') ms = 30 * 24 * 60 * 60 * 1000
+
+    const key = generateLicenseKey()
+    const expires_at = new Date(Date.now() + ms).toISOString()
+
+    const db = adminClient()
+    const { data, error } = await db
       .from('license_keys')
       .insert({
         key,
         plan,
         active: true,
         used_count: 0,
-        label: body.label || null,
+        label,
         expires_at,
       })
       .select()
@@ -56,7 +66,11 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
-    return NextResponse.json({ key: data.key, plan: data.plan, expires_at: data.expires_at })
+    return NextResponse.json({
+      key: data.key,
+      plan: data.plan,
+      expires_at: data.expires_at,
+    })
   } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
