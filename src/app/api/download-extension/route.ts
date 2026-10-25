@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { readFile } from 'fs/promises'
-import path from 'path'
+import { EXTENSION_ZIP_BASE64 } from '@/lib/extensionZip'
 
 function dbClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -34,20 +33,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Key expired' }, { status: 403 })
     }
 
-    const zipPath = path.join(
-      process.cwd(),
-      'public',
-      'extension',
-      'lvbl-infinity-v16.50.zip'
-    )
-    let buf: Buffer
-    try {
-      buf = await readFile(zipPath)
-    } catch {
-      return NextResponse.json(
-        { error: 'Extension package not found on server. Contact admin.' },
-        { status: 404 }
-      )
+    const buf = Buffer.from(EXTENSION_ZIP_BASE64, 'base64')
+    if (buf.length < 1000) {
+      return NextResponse.json({ error: 'Extension package missing' }, { status: 404 })
     }
 
     await supabase
