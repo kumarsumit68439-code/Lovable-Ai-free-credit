@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         plan: data.plan,
         expires_at: data.expires_at,
         label: data.label,
+        server_time: new Date().toISOString(),
       },
       { status: 200, headers: CORS_HEADERS }
     )
