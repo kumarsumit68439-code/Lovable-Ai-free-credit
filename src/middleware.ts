@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -21,10 +22,39 @@ export async function middleware(request: NextRequest) {
       },
     }
   )
-  await supabase.auth.getUser()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const path = request.nextUrl.pathname
+  const isPublicAuth =
+    path === '/login' ||
+    path.startsWith('/api/') ||
+    path.startsWith('/extension/') ||
+    path.startsWith('/_next') ||
+    path.includes('.')
+
+  if (!user && !isPublicAuth) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.searchParams.set('next', path === '/' ? '' : path)
+    return NextResponse.redirect(url)
+  }
+
+  if (user && path === '/login') {
+    const next = request.nextUrl.searchParams.get('next') || '/'
+    const url = request.nextUrl.clone()
+    url.pathname = next || '/'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
   return response
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|extension/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|zip)$).*)',
+  ],
 }
