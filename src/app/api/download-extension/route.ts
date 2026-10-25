@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { EXTENSION_ZIP_BASE64 } from '@/lib/extensionZip'
+import { readFile } from 'fs/promises'
+import path from 'path'
 
 function dbClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -13,10 +14,12 @@ function dbClient() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { key } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const key = body.key
     if (!key || typeof key !== 'string') {
       return NextResponse.json({ error: 'Key required' }, { status: 400 })
     }
+
     const normalized = key.trim().toUpperCase()
     const supabase = dbClient()
     const { data, error } = await supabase
@@ -33,9 +36,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Key expired' }, { status: 403 })
     }
 
-    const buf = Buffer.from(EXTENSION_ZIP_BASE64, 'base64')
-    if (buf.length < 1000) {
-      return NextResponse.json({ error: 'Extension package missing' }, { status: 404 })
+    const candidates = [
+      path.join(process.cwd(), 'public', 'extension', 'lvbl-infinity-v16.50.zip'),
+      path.join(process.cwd(), 'public', 'extension', 'lvbl-infinity-extension.zip'),
+    ]
+
+    let buf: Buffer | null = null
+    for (const zipPath of candidates) {
+      try {
+        buf = await readFile(zipPath)
+        if (buf.length > 1000) break
+      } catch {
+        /* try next */
+      }
+    }
+
+    if (!buf || buf.length < 1000) {
+      return NextResponse.json(
+        {
+          error:
+            'Extension package not on server. Add public/extension/lvbl-infinity-v16.50.zip to the repo.',
+        },
+        { status: 404 }
+      )
     }
 
     await supabase
@@ -43,7 +66,7 @@ export async function POST(req: NextRequest) {
       .update({ used_count: (data.used_count || 0) + 1 })
       .eq('id', data.id)
 
-    return new NextResponse(buf, {
+    return new NextResponse(new Uint8Array(buf), {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
