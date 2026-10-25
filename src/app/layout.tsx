@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Lvbl Infinity Unlimited Extension',
@@ -16,15 +14,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen antialiased">
+      <body className="min-h-screen antialiased bg-[#030308] text-white">
         <div className="premium-bg" aria-hidden>
           <div className="orb orb-1" />
           <div className="orb orb-2" />
           <div className="orb orb-3" />
         </div>
-        <Navbar />
-        <main className="relative z-10">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   )

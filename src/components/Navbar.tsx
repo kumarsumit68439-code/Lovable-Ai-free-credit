@@ -13,19 +13,12 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname()
-  if (pathname === '/login') return null
-  if (
-    pathname?.startsWith('/dashboard') ||
-    pathname?.startsWith('/license') ||
-    pathname?.startsWith('/settings')
-  ) {
-    return null
-  }
+  if (pathname?.startsWith('/dashboard')) return null
 
   return (
     <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 animate-fade-up">
-      <nav className="glass-nav flex items-center gap-1 rounded-full px-2 py-1.5 max-w-5xl w-full md:w-auto">
-        <Link href="/" className="flex items-center gap-2 px-3 py-1.5">
+      <nav className="glass-nav flex items-center gap-1 rounded-full px-2 py-1.5 max-w-5xl w-[95%] md:w-auto">
+        <Link href="/" className="flex items-center gap-2 px-3 py-1.5 shrink-0">
           <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 shadow-md shadow-pink-500/20" />
           <span className="font-semibold text-white text-sm hidden sm:inline tracking-tight">
             Lvbl Infinity

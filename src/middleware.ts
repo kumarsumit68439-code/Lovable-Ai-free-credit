@@ -28,24 +28,26 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const path = request.nextUrl.pathname
-  const isPublicAuth =
-    path === '/login' ||
+  const isAuthPage = path === '/login' || path === '/signup'
+  const isPublic =
+    isAuthPage ||
     path.startsWith('/api/') ||
     path.startsWith('/extension/') ||
-    path.startsWith('/_next') ||
-    path.includes('.')
+    path.startsWith('/_next')
 
-  if (!user && !isPublicAuth) {
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    url.searchParams.set('next', path === '/' ? '' : path)
+    if (path !== '/') {
+      url.searchParams.set('next', path)
+    }
     return NextResponse.redirect(url)
   }
 
-  if (user && path === '/login') {
+  if (user && isAuthPage) {
     const next = request.nextUrl.searchParams.get('next') || '/'
     const url = request.nextUrl.clone()
-    url.pathname = next || '/'
+    url.pathname = next.startsWith('/') ? next : '/'
     url.search = ''
     return NextResponse.redirect(url)
   }
