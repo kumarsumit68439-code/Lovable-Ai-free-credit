@@ -60,7 +60,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-white sm:text-4xl">Choose Your Access Plan</h2>
           <p className="mt-3 text-white/50">All plans are completely free.</p>
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {PLANS.filter((p) => p.id !== 'trial').map((plan) => (
+            {PLANS.filter((p) => (p.id as string) !== 'trial').map((plan) => (
               <div key={plan.id} className="glass-card rounded-2xl p-6 text-left hover:border-pink-500/40 transition">
                 <h3 className="text-xl font-semibold text-white">{plan.name}</h3>
                 <div className="mt-3 flex items-baseline gap-1">
