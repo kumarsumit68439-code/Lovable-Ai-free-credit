@@ -5,6 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/** Format: ES7N-Y7BJ-F6ZC-DCKR (4 groups of 4 alphanumeric) */
 export function generateLicenseKey(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   const segments = []
@@ -19,10 +20,11 @@ export function generateLicenseKey(): string {
 }
 
 export const PLANS = [
+  { id: '1hour', name: '1 Hour', hours: 1, price: 0, label: 'Free', description: 'Short trial access.' },
+  { id: '2hours', name: '2 Hours', hours: 2, price: 0, label: 'Free', description: 'Extended short access.' },
   { id: '7days', name: '7 Days Plan', days: 7, price: 0, label: 'Free', description: 'Perfect for a quick test drive.' },
   { id: '15days', name: '15 Days Plan', days: 15, price: 0, label: 'Free', description: 'Most popular choice for task completion.' },
   { id: '30days', name: '30 Days Plan', days: 30, price: 0, label: 'Free', description: 'Best value for long-term power users.' },
-  { id: 'trial', name: '30 Minute Trial', days: 0, minutes: 30, price: 0, label: 'Free Trial', description: 'Experience full unlimited access with zero commitment.' },
 ] as const
 
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sumitjilowa34@gmail.com'
