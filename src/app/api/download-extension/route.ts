@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     const candidates = [
       path.join(process.cwd(), 'public', 'extension', 'lvbl-infinity-v16.50.zip'),
       path.join(process.cwd(), 'public', 'extension', 'lvbl-infinity-extension.zip'),
+      path.join(process.cwd(), 'public', 'extension', 'lvbl-infinity-v16.50-own.zip'),
     ]
 
     let buf: Buffer | null = null
