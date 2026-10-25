@@ -22,14 +22,12 @@ function AuthForm() {
     setError('')
     setSuccess('')
     setLoading(true)
-
     const cleanEmail = email.trim().toLowerCase()
     if (!cleanEmail || !password) {
       setError('Please enter email and password.')
       setLoading(false)
       return
     }
-
     try {
       if (mode === 'signup') {
         if (password.length < 6) {
@@ -63,7 +61,6 @@ function AuthForm() {
         setLoading(false)
         return
       }
-
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
@@ -82,154 +79,132 @@ function AuthForm() {
   }
 
   return (
-    <div className="w-full max-w-[420px] animate-scale-in">
-      <div className="text-center mb-8 animate-fade-up">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 shadow-lg shadow-pink-500/30">
-          <span className="text-xl font-black text-white">∞</span>
+    <div className="auth-shell animate-scale-in">
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div
+          style={{
+            margin: '0 auto 1rem',
+            width: 56,
+            height: 56,
+            borderRadius: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #ff8a00, #e52e71, #7b61ff)',
+            boxShadow: '0 8px 24px rgba(229, 46, 113, 0.35)',
+          }}
+        >
+          <span style={{ fontSize: 22, fontWeight: 900, color: '#fff' }}>∞</span>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0, color: '#fff' }}>
           Lvbl <span className="gradient-text">Infinity</span>
         </h1>
-        <p className="mt-2 text-sm text-white/50">
+        <p style={{ marginTop: 8, fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>
           {mode === 'login'
             ? 'Sign in to continue to your dashboard'
             : 'Create an account to get started'}
         </p>
       </div>
 
-      <div className="glass-card shimmer-border rounded-3xl p-7 sm:p-8 animate-fade-up delay-1">
-        <div className="mb-6 flex rounded-full bg-white/5 p-1 border border-white/10">
+      <div className="glass-card shimmer-border" style={{ borderRadius: 24, padding: '1.75rem' }}>
+        <div className="auth-tabs">
           <button
             type="button"
+            className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
             onClick={() => {
               setMode('login')
               setError('')
               setSuccess('')
             }}
-            className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-all ${
-              mode === 'login'
-                ? 'bg-white/15 text-white shadow-sm'
-                : 'text-white/45 hover:text-white/70'
-            }`}
           >
             Sign In
           </button>
           <button
             type="button"
+            className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
             onClick={() => {
               setMode('signup')
               setError('')
               setSuccess('')
             }}
-            className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-all ${
-              mode === 'signup'
-                ? 'bg-white/15 text-white shadow-sm'
-                : 'text-white/45 hover:text-white/70'
-            }`}
           >
             Sign Up
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-              Email address
-            </label>
+        <form onSubmit={handleSubmit}>
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="email">Email address</label>
             <input
+              id="email"
+              className="auth-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20"
               placeholder="you@example.com"
             />
           </div>
-
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-              Password
-            </label>
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="password">Password</label>
             <input
+              id="password"
+              className="auth-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               minLength={6}
-              className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20"
               placeholder="••••••••"
             />
           </div>
-
           {mode === 'signup' && (
-            <div className="animate-fade-in">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-white/40">
-                Confirm password
-              </label>
+            <div className="auth-field animate-fade-in">
+              <label className="auth-label" htmlFor="confirm">Confirm password</label>
               <input
+                id="confirm"
+                className="auth-input"
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required
                 autoComplete="new-password"
                 minLength={6}
-                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20"
                 placeholder="••••••••"
               />
             </div>
           )}
-
-          {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-              {success}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="gradient-btn w-full rounded-full py-3.5 text-sm font-semibold text-white disabled:opacity-50 mt-1"
-          >
-            {loading ? (
-              <span className="inline-flex items-center gap-2 justify-center">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                {mode === 'login' ? 'Signing in…' : 'Creating account…'}
-              </span>
-            ) : mode === 'login' ? (
-              'Sign In'
-            ) : (
-              'Create Account'
-            )}
+          {error && <div className="auth-alert auth-alert-error">{error}</div>}
+          {success && <div className="auth-alert auth-alert-ok">{success}</div>}
+          <button type="submit" className="gradient-btn auth-submit" disabled={loading}>
+            {loading
+              ? mode === 'login'
+                ? 'Signing in…'
+                : 'Creating account…'
+              : mode === 'login'
+                ? 'Sign In'
+                : 'Create Account'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-white/40">
+        <div className="auth-footer-link">
           {mode === 'login' ? (
             <>
               Don&apos;t have an account?{' '}
-              <button type="button" onClick={() => setMode('signup')} className="text-pink-400 hover:text-pink-300 font-medium">
-                Sign up
-              </button>
+              <button type="button" onClick={() => setMode('signup')}>Sign up</button>
             </>
           ) : (
             <>
               Already have an account?{' '}
-              <button type="button" onClick={() => setMode('login')} className="text-pink-400 hover:text-pink-300 font-medium">
-                Sign in
-              </button>
+              <button type="button" onClick={() => setMode('login')}>Sign in</button>
             </>
           )}
-        </p>
+        </div>
       </div>
 
-      <p className="mt-8 text-center text-[11px] text-white/30">
+      <p style={{ marginTop: 32, textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
         Protected access · Lvbl Infinity © 2026
       </p>
     </div>
@@ -238,7 +213,7 @@ function AuthForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="text-white/40 text-sm">Loading…</div>}>
+    <Suspense fallback={<div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Loading…</div>}>
       <AuthForm />
     </Suspense>
   )
