@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     let buf: Buffer | null = null
     for (const zipPath of candidates) {
       try {
-        buf = await readFile(zipPath)
+        buf = await readFile(/*turbopackIgnore: true*/ zipPath)
         if (buf.length > 1000) break
       } catch {
         /* try next */
