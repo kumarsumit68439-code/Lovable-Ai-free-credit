@@ -13,7 +13,14 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname()
-  const isDashboard = pathname?.startsWith('/dashboard') || pathname?.startsWith('/license') || pathname?.startsWith('/settings') || pathname?.startsWith('/users') || pathname?.startsWith('/activity') || pathname?.startsWith('/api-') || pathname?.startsWith('/docs')
+  const isDashboard =
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/license') ||
+    pathname?.startsWith('/settings') ||
+    pathname?.startsWith('/users') ||
+    pathname?.startsWith('/activity') ||
+    pathname?.startsWith('/api-') ||
+    pathname?.startsWith('/docs')
 
   if (isDashboard) return null
 
@@ -26,12 +33,28 @@ export default function Navbar() {
         </Link>
         <div className="hidden md:flex items-center gap-0.5">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-full px-3 py-1.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition">{l.label}</Link>
+            <Link
+              key={l.href}
+              href={l.href}
+              className="rounded-full px-3 py-1.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition"
+            >
+              {l.label}
+            </Link>
           ))}
         </div>
         <div className="flex items-center gap-1 pl-1">
-          <Link href="/login" className="rounded-full px-3 py-1.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition">Support</Link>
-          <Link href="/#pricing" className="rounded-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 px-4 py-1.5 text-sm font-medium text-white shadow-md hover:opacity-90 transition">Get Started</Link>
+          <Link
+            href="/login"
+            className="rounded-full px-3 py-1.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition"
+          >
+            Support
+          </Link>
+          <Link
+            href="/#pricing"
+            className="rounded-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 px-4 py-1.5 text-sm font-medium text-white shadow-md hover:opacity-90 transition"
+          >
+            Get Started
+          </Link>
         </div>
       </nav>
     </header>

@@ -10,7 +10,9 @@ export default function Footer() {
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600" />
               <span className="font-semibold text-white">Lvbl Infinity</span>
             </div>
-            <p className="text-sm text-white/50">Unlimited access to the future of browser automation.</p>
+            <p className="text-sm text-white/50">
+              Unlimited access to the future of browser automation.
+            </p>
           </div>
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Product</h4>
@@ -32,10 +34,14 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Contact</h4>
-            <a href="mailto:support@lvbl.ai" className="text-sm text-white/60 hover:text-white">support@lvbl.ai</a>
+            <a href="mailto:support@lvbl.ai" className="text-sm text-white/60 hover:text-white">
+              support@lvbl.ai
+            </a>
           </div>
         </div>
-        <div className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-white/40">© 2026 Lvbl Infinity. All rights reserved.</div>
+        <div className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-white/40">
+          © 2026 Lvbl Infinity. All rights reserved.
+        </div>
       </div>
     </footer>
   )
