@@ -16,27 +16,38 @@ export default function DownloadPage() {
       return
     }
     setStatus('loading')
+    setMessage('')
     try {
-      const res = await fetch('/api/validate-key', {
+      const res = await fetch('/api/download-extension', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: key.trim() }),
       })
-      const data = await res.json()
-      if (!res.ok || !data.valid) {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
         setStatus('error')
         setMessage(data.error || 'Invalid or expired key.')
         return
       }
-      setStatus('ok')
-      setMessage('Key valid. Download starting...')
+      const blob = await res.blob()
+      if (blob.type.includes('html') || blob.size < 1000) {
+        setStatus('error')
+        setMessage('Download failed — package missing on server.')
+        return
+      }
+      const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = '/extension/lvbl-infinity-v16.50.zip'
+      a.href = url
       a.download = 'lvbl-infinity-extension.zip'
+      document.body.appendChild(a)
       a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+      setStatus('ok')
+      setMessage('Key valid. Download started.')
     } catch {
       setStatus('error')
-      setMessage('Validation failed. Try again.')
+      setMessage('Download failed. Try again.')
     }
   }
 
@@ -48,32 +59,31 @@ export default function DownloadPage() {
           <p className="mt-1 text-sm text-white/50">Only available for valid keys.</p>
           <form onSubmit={handleDownload} className="mt-6 space-y-4">
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider text-white/40">
-                License key or trial key *
-              </label>
+              <label className="auth-label">License key or trial key *</label>
               <input
                 type="text"
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
                 placeholder="Enter your key..."
-                className="mt-2 w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white placeholder:text-white/30 focus:border-pink-500/50 focus:outline-none"
+                className="auth-input mt-2"
               />
             </div>
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="gradient-btn w-full rounded-full py-3 font-semibold text-white disabled:opacity-50"
-            >
-              {status === 'loading' ? 'Validating...' : 'Download extension (.zip)'}
+            <button type="submit" disabled={status === 'loading'} className="gradient-btn auth-submit">
+              {status === 'loading' ? 'Validating…' : 'Download extension (.zip)'}
             </button>
             {message && (
-              <p className={`text-sm ${status === 'ok' ? 'text-emerald-400' : 'text-red-400'}`}>{message}</p>
+              <p className={`text-sm ${status === 'ok' ? 'text-emerald-400' : 'text-red-400'}`}>
+                {message}
+              </p>
             )}
           </form>
           <p className="mt-4 text-center text-xs text-white/30">CURRENT VERSION: 6.0</p>
           <div className="mt-6 border-t border-white/10 pt-6 text-center">
             <p className="text-sm text-white/50">Don&apos;t have an activation key?</p>
-            <Link href="/#pricing" className="mt-3 inline-block rounded-full border border-white/20 px-6 py-2 text-sm text-white hover:bg-white/5 transition">
+            <Link
+              href="/#pricing"
+              className="mt-3 inline-block rounded-full border border-white/20 px-6 py-2 text-sm text-white hover:bg-white/5 transition"
+            >
               Get Free Plan
             </Link>
           </div>
