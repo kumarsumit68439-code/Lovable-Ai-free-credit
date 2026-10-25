@@ -5,7 +5,8 @@ import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Lvbl Infinity Unlimited Extension',
-  description: 'Experience unlimited extension features with Lvbl Infinity. Secure license generation and management for professional developers.',
+  description:
+    'Experience unlimited extension features with Lvbl Infinity. Secure license generation and management for professional developers.',
 }
 
 export default function RootLayout({

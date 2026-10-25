@@ -14,14 +14,3 @@ body {
 html {
   scroll-behavior: smooth;
 }
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.bg-gradient-animate {
-  background-size: 200% 200%;
-  animation: gradient 6s ease infinite;
-}

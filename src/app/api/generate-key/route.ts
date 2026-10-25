@@ -17,12 +17,16 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          getAll() { return cookieStore.getAll() },
+          getAll() {
+            return cookieStore.getAll()
+          },
           setAll() {},
         },
       }
     )
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user || user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -31,9 +35,10 @@ export async function POST(req: NextRequest) {
     const plan = body.plan || '30days'
     const days = plan === '7days' ? 7 : plan === '15days' ? 15 : plan === 'trial' ? 0 : 30
     const key = generateLicenseKey()
-    const expires_at = days === 0
-      ? new Date(Date.now() + 30 * 60 * 1000).toISOString()
-      : new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+    const expires_at =
+      days === 0
+        ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        : new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
 
     const { data, error } = await supabaseAdmin
       .from('license_keys')
