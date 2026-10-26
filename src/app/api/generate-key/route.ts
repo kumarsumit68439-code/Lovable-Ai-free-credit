@@ -24,15 +24,48 @@ export async function POST(req: NextRequest) {
           getAll() {
             return cookieStore.getAll()
           },
-          setAll() {},
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              /* ignore */
+            }
+          },
         },
       }
     )
+
     const {
       data: { user },
+      error: userError,
     } = await supabase.auth.getUser()
-    if (!user || user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      return NextResponse.json({ error: 'Unauthorized — admin only' }, { status: 401 })
+
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized — please login again' },
+        { status: 401 }
+      )
+    }
+
+    const email = (user.email || '').toLowerCase()
+    const adminEmail = (process.env.ADMIN_EMAIL || ADMIN_EMAIL).toLowerCase()
+    if (email !== adminEmail) {
+      return NextResponse.json(
+        { error: `Unauthorized — admin only (signed in as ${user.email})` },
+        { status: 401 }
+      )
+    }
+
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        {
+          error:
+            'Server missing SUPABASE_SERVICE_ROLE_KEY. Add it in Vercel env and redeploy.',
+        },
+        { status: 500 }
+      )
     }
 
     const body = await req.json().catch(() => ({}))
@@ -42,6 +75,7 @@ export async function POST(req: NextRequest) {
     let ms = 60 * 60 * 1000
     if (plan === '2hours') ms = 2 * 60 * 60 * 1000
     else if (plan === '1hour' || plan === 'trial') ms = 60 * 60 * 1000
+    else if (plan === '24hours') ms = 24 * 60 * 60 * 1000
     else if (plan === '7days') ms = 7 * 24 * 60 * 60 * 1000
     else if (plan === '15days') ms = 15 * 24 * 60 * 60 * 1000
     else if (plan === '30days') ms = 30 * 24 * 60 * 60 * 1000
@@ -71,7 +105,8 @@ export async function POST(req: NextRequest) {
       plan: data.plan,
       expires_at: data.expires_at,
     })
-  } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'Server error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
