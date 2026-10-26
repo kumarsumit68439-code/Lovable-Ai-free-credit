@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" class="sp-extension-root">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lovable - Extension</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body class="sp-extension-page">
+    <div class="sp-header">
+      <div class="sp-brand">
+        <img class="sp-brand-logo" src="assets/logo-square.png" alt="Lovable Infinity" /><span class="sp-brand-text">Lovable Infinity</span>
+        <span class="sp-badge">6.0</span>
+      </div>
+      <div class="sp-header-actions">
+        <button class="sp-icon-btn sp-logout-btn" data-i18n-title="header.logout" title="Logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="sp-body" id="sp-body">
+      <div class="sp-license-gate" id="sp-loading" style="padding: 40px 0; text-align: center">
+        <p style="color: var(--ql-text-muted); display: flex; align-items: center; justify-content: center; gap: 8px" data-i18n="loading">
+          <svg class="sp-tool-loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+          <span>Loading...</span>
+        </p>
+      </div>
+    </div>
+    <div class="sp-footer" id="sp-footer" style="display: none">
+      <div class="sp-social-links"></div>
+      <span class="sp-footer-badge">Lovable Infinity • v6.0</span>
+    </div>
+    <script src="scripts/shared/license-bridge.js"></script>
+    <script src="scripts/shared/fingerprint.js"></script>
+    <script src="scripts/shared/flow.js"></script>
+    <script src="scripts/shared/translations.js"></script>
+    <script src="scripts/panel/panel-templates.js"></script>
+    <script src="scripts/panel/panel.js"></script>
+  </body>
+</html>
